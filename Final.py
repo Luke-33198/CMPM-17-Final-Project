@@ -9,6 +9,8 @@ import os
 from torchvision.transforms import v2
 import torch.nn as nn
 
+
+# split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
 og_folder = "Type_01_(Raw_Gesture)"
 splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
 
@@ -16,10 +18,12 @@ train_dataset = datasets.ImageFolder('asl_folder/train', transform=transforms.To
 val_dataset = datasets.ImageFolder('asl_folder/val', transform=transforms.ToTensor())
 test_dataset = datasets.ImageFolder('asl_folder/test', transform=transforms.ToTensor())
 
+#data loaders for the dataset
 train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True)
 
+#data augemntations for data
 augmentations = v2.Compose([
     v2.ToTensor(),
     v2.RandomResizedCrop(size = (224,224), scale = (0.08,1.0), ratio = (0.75, 1.33)),
@@ -42,7 +46,7 @@ for images_test, labels_test in test_loader:
 
 fig = plt.figure(figsize=(40,40))
 
-
+#when visualizing data make it so that when displaying show the correct letter to image
 def numchange(num):
     match num:
         case 0:
@@ -103,7 +107,7 @@ def numchange(num):
             return "Z"
     
 
-
+#visualization code for the images
 for num, image in enumerate(images):
     image = image.permute(1,2,0)
     plt1 = plt.subplot(10, 10, num+1)
@@ -111,8 +115,6 @@ for num, image in enumerate(images):
     plt1.set_title(numchange(labels[num]))
     plt1.axis('off')
 plt.show()
-
-
 
 
 
