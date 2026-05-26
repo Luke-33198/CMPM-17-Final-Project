@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 import os
 from torchvision.transforms import v2
+import torch.nn as nn
 
 og_folder = "Type_01_(Raw_Gesture)"
 splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
@@ -114,3 +115,27 @@ plt.show()
 
 
 
+
+
+class ConvNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d()
+        self.conv2 = nn.Conv2d()
+        self.conv3 = nn.Conv2d()
+        self.pool = nn.MaxPool2D(2,2)
+        self.fc1 = nn.Linear()
+        self.fc2 = nn.Linear()
+        self.relu = nn.ReLU()
+    
+    def forward(self, x):
+        x = self.relu(self.conv1(x))
+        x = self.pool(x)
+        x = self.relu(self.conv2(x))
+        x = self.pool(x)
+        x = self.relu(self.conv3(x))
+        x = self.pool(x)
+        x = x.flatten(start_dim=1)
+        x = self.relu(self.fc1(x))
+        output = self.fc2(x)
+        return output
