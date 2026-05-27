@@ -28,17 +28,24 @@ augmentations = v2.Compose([
     v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+val_test_transforms = v2.Compose([
+    v2.Resize((224, 224)),
+    v2.ToDtype(torch.float32, scale=True),
+    v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
 for images, labels in train_loader:
     #This where we create augmentations 
     images = augmentations(images)
     break
 
 for images_val, labels_val in val_loader:
+    images_val = val_test_transforms(images_val)
     break
 
 for images_test, labels_test in test_loader:
+    images_test = val_test_transforms(images_test)
     break
-
 fig = plt.figure(figsize=(40,40))
 
 
@@ -111,6 +118,7 @@ for num, image in enumerate(images):
     plt1.axis('off')
 plt.show()
 
-
+class myModel(nn.Module):
+    def__init__self
 
 
