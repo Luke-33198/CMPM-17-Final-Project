@@ -124,10 +124,6 @@ for num, image in enumerate(images):
 plt.show()
 
 
-#class myModel(nn.Module):
-  #  def__init__self
-
-
 class ConvNet(nn.Module):
     def __init__(self):
         super().__init__()
