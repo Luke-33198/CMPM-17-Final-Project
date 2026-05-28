@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 # split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
-#og_folder = "Type_01_(Raw_Gesture)"
+#og_folder = "Type_01_Raw_Gesture"
 #splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
 
 train_dataset = datasets.ImageFolder('asl_folder/train', transform=transforms.ToTensor())
@@ -154,6 +154,8 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 NUM_EPOCHS = 20
 
+
+# -------TRAINING LOOP-------------
 for epoch in range(NUM_EPOCHS):
     model.train()
     total_loss = 0
