@@ -11,8 +11,8 @@ import torch.nn as nn
 
 
 # split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
-og_folder = "Type_01_(Raw_Gesture)"
-splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
+#og_folder = "Type_01_(Raw_Gesture)"
+#splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
 
 train_dataset = datasets.ImageFolder('asl_folder/train', transform=transforms.ToTensor())
 val_dataset = datasets.ImageFolder('asl_folder/val', transform=transforms.ToTensor())
