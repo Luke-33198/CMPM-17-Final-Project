@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import os
 from torchvision.transforms import v2
 import torch.nn as nn
-
+import torch.optim as optim
 
 # split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
 #og_folder = "Type_01_(Raw_Gesture)"
@@ -127,12 +127,12 @@ plt.show()
 class ConvNet(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(28, 56, 3, 1, 1)
-        self.conv2 = nn.Conv2d(56, 112, 3, 1, 1)
-        self.conv3 = nn.Conv2d(112, 224, 3, 1, 1)
+        self.conv1 = nn.Conv2d(3, 6, 3, 1, 1)
+        self.conv2 = nn.Conv2d(6, 16, 3, 1, 1)
+        self.conv3 = nn.Conv2d(16, 48, 3, 1, 1)
         self.pool = nn.MaxPool2d(2,2)
-        self.fc1 = nn.Linear(28 * 28 * 224, 1000)
-        self.fc2 = nn.Linear(1000, 28)
+        self.fc1 = nn.Linear(28 * 28 * 48, 400)
+        self.fc2 = nn.Linear(400, 28)
         self.relu = nn.ReLU()
     
     def forward(self, x):
@@ -146,3 +146,22 @@ class ConvNet(nn.Module):
         x = self.relu(self.fc1(x))
         output = self.fc2(x)
         return output
+
+
+'''model = ConvNet()
+model.train()
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+NUM_EPOCHS = 20
+
+for epoch in range(NUM_EPOCHS):
+    model.train()
+    total_error = 0
+    total_loss = 0
+    for batch1, batch2 in train_loader:
+        train_preds = model(batch1)
+        loss = criterion(train_preds, batch2.unsqueeze(1))
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        '''
