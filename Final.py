@@ -19,9 +19,9 @@ val_dataset = datasets.ImageFolder('asl_folder/val', transform=transforms.ToTens
 test_dataset = datasets.ImageFolder('asl_folder/test', transform=transforms.ToTensor())
 
 #data loaders for the dataset
-train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True, num_workers=16)
+val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True, num_workers=16)
+test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True, num_workers=16)
 
 #data augemntations for data
 augmentations = v2.Compose([
