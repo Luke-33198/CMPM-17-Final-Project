@@ -169,3 +169,4 @@ for epoch in range(NUM_EPOCHS):
 
     print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
         
+# no dataset
