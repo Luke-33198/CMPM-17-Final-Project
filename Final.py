@@ -148,7 +148,7 @@ class ConvNet(nn.Module):
         return output
 
 
-'''model = ConvNet()
+model = ConvNet()
 model.train()
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -156,12 +156,14 @@ NUM_EPOCHS = 20
 
 for epoch in range(NUM_EPOCHS):
     model.train()
-    total_error = 0
     total_loss = 0
     for batch1, batch2 in train_loader:
         train_preds = model(batch1)
         loss = criterion(train_preds, batch2.unsqueeze(1))
+        total_loss += loss
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        '''
+
+    print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
+        
