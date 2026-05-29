@@ -174,6 +174,7 @@ for epoch in range(NUM_EPOCHS):
 
     print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
 
+# -------VALIDATION LOOP-------------
     model.eval()
     total_loss1 = 0
     for val_x, val_y in val_loader:
@@ -182,6 +183,8 @@ for epoch in range(NUM_EPOCHS):
         total_loss1 += loss1
     print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))**0.5}")
 
+
+# -------TESTING LOOP-------------
 model.eval()
 with torch.no_grad():
     ### Get inputs and outputs in batches using the testing DataLoader
