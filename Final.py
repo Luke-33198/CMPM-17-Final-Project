@@ -14,19 +14,13 @@ import torch.optim as optim
 #og_folder = "Type_01_Raw_Gesture"
 #splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
 
-train_dataset = datasets.ImageFolder('asl_folder/train', transform=transforms.ToTensor())
-val_dataset = datasets.ImageFolder('asl_folder/val', transform=transforms.ToTensor())
-test_dataset = datasets.ImageFolder('asl_folder/test', transform=transforms.ToTensor())
 
-#data loaders for the dataset
-train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True) # Add num_workers=16
-val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True) # Add num_workers=16
-test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True) # Add num_workers=16
 
 #data augemntations for data
 augmentations = v2.Compose([
     v2.ToTensor(),
-    v2.RandomResizedCrop(size = (224,224), scale = (0.08,1.0), ratio = (0.75, 1.33)),
+    v2.Resize((224, 224)),
+    #v2.RandomResizedCrop(size = (224,224), scale = (0.08,1.0), ratio = (0.75, 1.33)),
     v2.RandomHorizontalFlip(0.25),
     v2.RandomPerspective(p =0.3),
     v2.ToDtype(torch.float32, scale=True),
@@ -34,10 +28,20 @@ augmentations = v2.Compose([
 ])
 
 val_test_transforms = v2.Compose([
+    v2.ToTensor(),
     v2.Resize((224, 224)),
     v2.ToDtype(torch.float32, scale=True),
     v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
+
+train_dataset = datasets.ImageFolder('asl_folder/train', transform=augmentations)
+val_dataset = datasets.ImageFolder('asl_folder/val', transform=val_test_transforms)
+test_dataset = datasets.ImageFolder('asl_folder/test', transform=val_test_transforms)
+
+#data loaders for the dataset
+train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True) # Add num_workers=16
+val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True) # Add num_workers=16
+test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True) # Add num_workers=16
 
 for images, labels in train_loader:
     #This where we create augmentations 
@@ -46,6 +50,7 @@ for images, labels in train_loader:
 
 for images_val, labels_val in val_loader:
     images_val = val_test_transforms(images_val)
+
     break
 
 for images_test, labels_test in test_loader:
