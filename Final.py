@@ -168,5 +168,23 @@ for epoch in range(NUM_EPOCHS):
         optimizer.step()
 
     print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
-        
+
+    model.eval()
+    total_loss1 = 0
+    for val_x, val_y in val_loader:
+        val_preds = model(val_x)
+        loss1 = criterion(val_preds, val_y.unsqueeze(1))
+        total_loss1 += loss1
+    print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))**0.5}")
+
+model.eval()
+with torch.no_grad():
+    ### Get inputs and outputs in batches using the testing DataLoader
+    total_loss2 = 0
+    for test_x, test_y in test_loader:
+        test_preds = model(test_x)
+        loss2 = criterion(test_preds, test_y.unsqueeze(1))
+        total_loss2 += loss2
+
+    print(f"Loss: {(total_loss2/(len(test_loader)))**0.5}")      
 # no dataset
