@@ -157,7 +157,7 @@ model = ConvNet()
 model.train()
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-NUM_EPOCHS = 20
+NUM_EPOCHS = 500
 
 
 #used so this doesnt run when we use the demo file
