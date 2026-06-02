@@ -160,39 +160,46 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 NUM_EPOCHS = 20
 
 
+#used so this doesnt run when we use the demo file
 # -------TRAINING LOOP-------------
-for epoch in range(NUM_EPOCHS):
-    model.train()
-    total_loss = 0
-    for batch1, batch2 in train_loader:
-        train_preds = model(batch1)
-        loss = criterion(train_preds, batch2.unsqueeze(1))
-        total_loss += loss
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+if __name__ ==  "__main__" :
+    for epoch in range(NUM_EPOCHS):
+        model.train()
+        total_loss = 0
+        for batch1, batch2 in train_loader:
+            train_preds = model(batch1)
+            loss = criterion(train_preds, batch2.unsqueeze(1))
+            total_loss += loss
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-    print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
+        print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
 
-# -------VALIDATION LOOP-------------
+    # -------VALIDATION LOOP-------------
+        model.eval()
+        total_loss1 = 0
+        for val_x, val_y in val_loader:
+            val_preds = model(val_x)
+            loss1 = criterion(val_preds, val_y.unsqueeze(1))
+            total_loss1 += loss1
+        print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))**0.5}")
+
+
+    # -------TESTING LOOP-------------
     model.eval()
-    total_loss1 = 0
-    for val_x, val_y in val_loader:
-        val_preds = model(val_x)
-        loss1 = criterion(val_preds, val_y.unsqueeze(1))
-        total_loss1 += loss1
-    print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))**0.5}")
+    with torch.no_grad():
+        ### Get inputs and outputs in batches using the testing DataLoader
+        total_loss2 = 0
+        for test_x, test_y in test_loader:
+            test_preds = model(test_x)
+            loss2 = criterion(test_preds, test_y.unsqueeze(1))
+            total_loss2 += loss2
 
+        print(f"Loss: {(total_loss2/(len(test_loader)))**0.5}")      
+# END
 
-# -------TESTING LOOP-------------
-model.eval()
-with torch.no_grad():
-    ### Get inputs and outputs in batches using the testing DataLoader
-    total_loss2 = 0
-    for test_x, test_y in test_loader:
-        test_preds = model(test_x)
-        loss2 = criterion(test_preds, test_y.unsqueeze(1))
-        total_loss2 += loss2
+# model.load_state_dict(torch.load(FILE, weights_only=True))
+# this line is used to load the trained weights into a new file
 
-    print(f"Loss: {(total_loss2/(len(test_loader)))**0.5}")      
-# no dataset
+torch.save(model.state_dict(), "model.pt")
