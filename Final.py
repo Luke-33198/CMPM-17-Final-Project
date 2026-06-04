@@ -9,10 +9,11 @@ import os
 from torchvision.transforms import v2
 import torch.nn as nn
 import torch.optim as optim
+from torch.optim.lr_scheduler import ExponentialLR as EXplr
 
 # split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
-#og_folder = "Type_01_Raw_Gesture"
-#splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
+og_folder = "Type_01_Raw_Gesture"
+splitfolders.ratio(og_folder, output="asl_folder", seed=76, ratio=(.7,.15,.15))
 
 
 
@@ -158,7 +159,7 @@ model.train()
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 NUM_EPOCHS = 500
-
+scheduler = EXplr(optimizer, gamma=.9)
 
 #used so this doesnt run when we use the demo file
 # -------TRAINING LOOP-------------
@@ -173,6 +174,7 @@ if __name__ ==  "__main__" :
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        scheduler.step()
 
         print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
 
