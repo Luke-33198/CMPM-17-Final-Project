@@ -40,9 +40,9 @@ val_dataset = datasets.ImageFolder('asl_folder/val', transform=val_test_transfor
 test_dataset = datasets.ImageFolder('asl_folder/test', transform=val_test_transforms)
 
 #data loaders for the dataset
-train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True) # Add num_workers=16
-val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True) # Add num_workers=16
-test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True) # Add num_workers=16
+train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True, num_workers=16)
+val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True, num_workers=16)
+test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True,  num_workers=16)
 
 for images, labels in train_loader:
     #This where we create augmentations 
@@ -156,7 +156,7 @@ class ConvNet(nn.Module):
 
 model = ConvNet()
 model.train()
-criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 NUM_EPOCHS = 500
 scheduler = EXplr(optimizer, gamma=.9)
@@ -167,25 +167,41 @@ if __name__ ==  "__main__" :
     for epoch in range(NUM_EPOCHS):
         model.train()
         total_loss = 0
+        batch = 0
         for batch1, batch2 in train_loader:
+            print(f"Batch {batch}")
             train_preds = model(batch1)
-            loss = criterion(train_preds, batch2.unsqueeze(1))
+            print(f"Dtype preds: {train_preds.shape}")
+            print(f"Dtype batch2: {batch2.shape}")
+            loss = criterion(train_preds, batch2)
             total_loss += loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            class_preds = torch.max(train_preds, axis=1)[1]
+            print(class_preds.shape)
+            print(batch2.shape)
+            num_correct = (class_preds == batch2).sum()
+            accuracy = num_correct / len(train_loader)
+            batch += 1
+            print(batch)
+            if (batch > 4):
+                break
         scheduler.step()
 
-        print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader) ** .5}")
+        print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader)} | Accuracy {accuracy}")
 
     # -------VALIDATION LOOP-------------
         model.eval()
         total_loss1 = 0
         for val_x, val_y in val_loader:
             val_preds = model(val_x)
-            loss1 = criterion(val_preds, val_y.unsqueeze(1))
+            loss1 = criterion(val_preds, val_y)
             total_loss1 += loss1
-        print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))**0.5}")
+            class_preds = torch.max(val_preds, axis=1)[1]
+            num_correct = (class_preds == val_y).sum()
+            accuracy = num_correct / len(val_loader)
+        print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))} | Accuracy: {accuracy}")
 
 
     # -------TESTING LOOP-------------
@@ -195,13 +211,14 @@ if __name__ ==  "__main__" :
         total_loss2 = 0
         for test_x, test_y in test_loader:
             test_preds = model(test_x)
-            loss2 = criterion(test_preds, test_y.unsqueeze(1))
+            loss2 = criterion(test_preds, test_y)
             total_loss2 += loss2
+            class_preds = torch.max(test_preds, axis=1)[1]
+            num_correct = (class_preds == test_y).sum()
+            accuracy = num_correct / len(test_loader)
 
-        print(f"Loss: {(total_loss2/(len(test_loader)))**0.5}")      
+        print(f"Loss: {(total_loss2/(len(test_loader)))} Accuracy {accuracy}")      
 # END
 
 # model.load_state_dict(torch.load(FILE, weights_only=True))
 # this line is used to load the trained weights into a new file
-
-torch.save(model.state_dict(), "model.pt")
