@@ -40,9 +40,9 @@ val_dataset = datasets.ImageFolder('asl_folder/val', transform=val_test_transfor
 test_dataset = datasets.ImageFolder('asl_folder/test', transform=val_test_transforms)
 
 #data loaders for the dataset
-train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True, num_workers=16)
-val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True, num_workers=16)
-test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True,  num_workers=16)
+train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True, num_workers=32)
+val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True, num_workers=32)
+test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True,  num_workers=32)
 
 for images, labels in train_loader:
     #This where we create augmentations 
@@ -158,8 +158,12 @@ model = ConvNet()
 model.train()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-NUM_EPOCHS = 500
+NUM_EPOCHS = 50
 scheduler = EXplr(optimizer, gamma=.9)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = model.to(device)
+
 
 #used so this doesnt run when we use the demo file
 # -------TRAINING LOOP-------------
@@ -169,6 +173,8 @@ if __name__ ==  "__main__" :
         total_loss = 0
         batch = 0
         for batch1, batch2 in train_loader:
+            batch1 = batch1.to(device)
+            batch2 = batch2.to(device)
             print(f"Batch {batch}")
             train_preds = model(batch1)
             print(f"Dtype preds: {train_preds.shape}")
@@ -195,6 +201,8 @@ if __name__ ==  "__main__" :
         model.eval()
         total_loss1 = 0
         for val_x, val_y in val_loader:
+            val_x = val_x.to(device)
+            val_y = val_y.to(device)
             val_preds = model(val_x)
             loss1 = criterion(val_preds, val_y)
             total_loss1 += loss1
@@ -210,6 +218,8 @@ if __name__ ==  "__main__" :
         ### Get inputs and outputs in batches using the testing DataLoader
         total_loss2 = 0
         for test_x, test_y in test_loader:
+            test_x = test_x.to(device)
+            test_y = text_y.to(device)
             test_preds = model(test_x)
             loss2 = criterion(test_preds, test_y)
             total_loss2 += loss2
