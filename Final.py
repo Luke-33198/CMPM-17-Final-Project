@@ -10,6 +10,7 @@ from torchvision.transforms import v2
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR as EXplr
+import wandb
 
 # split the folders into 3 datasets training validation and testing being split 70, 15, 15% respectivley
 og_folder = "Type_01_Raw_Gesture"
@@ -163,6 +164,8 @@ scheduler = EXplr(optimizer, gamma=.9)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = model.to(device)
+torch.save(model.state_dict(), "PATH")
+run = wandb.init(project="ASL-Decipher", name="my-run01",config={"epochs": 50,"batch_size": 100,"learning_rate": 1e-3,"image_size": 224,"model": "CNN"})
 
 
 #used so this doesnt run when we use the demo file
@@ -171,6 +174,7 @@ if __name__ ==  "__main__" :
     for epoch in range(NUM_EPOCHS):
         model.train()
         total_loss = 0
+        num_correct1 = 0
         batch = 0
         for batch1, batch2 in train_loader:
             batch1 = batch1.to(device)
@@ -187,19 +191,19 @@ if __name__ ==  "__main__" :
             class_preds = torch.max(train_preds, axis=1)[1]
             print(class_preds.shape)
             print(batch2.shape)
-            num_correct = (class_preds == batch2).sum()
-            accuracy = num_correct / len(train_loader)
+            num_correct1 += (class_preds == batch2).sum()
+            accuracy = num_correct1 / len(train_dataset)
             batch += 1
             print(batch)
-            if (batch > 4):
-                break
         scheduler.step()
 
         print(f"Epoch:{epoch} | Loss {total_loss/len(train_loader)} | Accuracy {accuracy}")
+        torch.save(model.state_dict(), "model.pt")
 
     # -------VALIDATION LOOP-------------
         model.eval()
         total_loss1 = 0
+        num_correct2 = 0
         for val_x, val_y in val_loader:
             val_x = val_x.to(device)
             val_y = val_y.to(device)
@@ -207,8 +211,8 @@ if __name__ ==  "__main__" :
             loss1 = criterion(val_preds, val_y)
             total_loss1 += loss1
             class_preds = torch.max(val_preds, axis=1)[1]
-            num_correct = (class_preds == val_y).sum()
-            accuracy = num_correct / len(val_loader)
+            num_correct2 += (class_preds == val_y).sum()
+            accuracy = num_correct2 / len(val_dataset)
         print(f"Epoch {epoch} | Loss: {(total_loss1/(len(val_loader)))} | Accuracy: {accuracy}")
 
 
@@ -217,18 +221,20 @@ if __name__ ==  "__main__" :
     with torch.no_grad():
         ### Get inputs and outputs in batches using the testing DataLoader
         total_loss2 = 0
+        num_correct3 = 0
         for test_x, test_y in test_loader:
             test_x = test_x.to(device)
-            test_y = text_y.to(device)
+            test_y = test_y.to(device)
             test_preds = model(test_x)
             loss2 = criterion(test_preds, test_y)
             total_loss2 += loss2
             class_preds = torch.max(test_preds, axis=1)[1]
-            num_correct = (class_preds == test_y).sum()
-            accuracy = num_correct / len(test_loader)
+            num_correct3 += (class_preds == test_y).sum()
+            accuracy = num_correct3 / len(test_dataset)
 
         print(f"Loss: {(total_loss2/(len(test_loader)))} Accuracy {accuracy}")      
+
+    run.log({"train_loss": total_loss, "validation_loss": total_loss1})
+
 # END
 
-# model.load_state_dict(torch.load(FILE, weights_only=True))
-# this line is used to load the trained weights into a new file
