@@ -41,9 +41,9 @@ val_dataset = datasets.ImageFolder('asl_folder/val', transform=val_test_transfor
 test_dataset = datasets.ImageFolder('asl_folder/test', transform=val_test_transforms)
 
 #data loaders for the dataset
-train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True, num_workers=32)
-val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True, num_workers=32)
-test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True,  num_workers=32)
+train_loader = DataLoader(train_dataset, batch_size=100, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=100, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=100, shuffle=True)
 
 for images, labels in train_loader:
     #This where we create augmentations 
@@ -164,13 +164,13 @@ scheduler = EXplr(optimizer, gamma=.9)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = model.to(device)
-torch.save(model.state_dict(), "PATH")
 run = wandb.init(project="ASL-Decipher", name="my-run01",config={"epochs": 50,"batch_size": 100,"learning_rate": 1e-3,"image_size": 224,"model": "CNN"})
 
 
 #used so this doesnt run when we use the demo file
 # -------TRAINING LOOP-------------
 if __name__ ==  "__main__" :
+    torch.save(model.state_dict(), "model.pt")
     for epoch in range(NUM_EPOCHS):
         model.train()
         total_loss = 0
