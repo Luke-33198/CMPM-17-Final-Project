@@ -159,7 +159,7 @@ model = ConvNet()
 model.train()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-NUM_EPOCHS = 50
+NUM_EPOCHS = 20
 scheduler = EXplr(optimizer, gamma=.9)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
