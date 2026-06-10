@@ -164,7 +164,7 @@ scheduler = EXplr(optimizer, gamma=.9)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = model.to(device)
-run = wandb.init(project="ASL-Decipher", name="my-run01",config={"epochs": 50,"batch_size": 100,"learning_rate": 1e-3,"image_size": 224,"model": "CNN"})
+run = wandb.init(project="ASL-Decipher", name="my-run01",config={"epochs": 20,"batch_size": 100,"learning_rate": 1e-3,"image_size": 224,"model": "CNN"})
 
 
 #used so this doesnt run when we use the demo file
